@@ -1,0 +1,265 @@
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <a routerLink="/home" routerLinkActive="active" class="navbar-brand">Battleship Lobby</a>
+    <ul class="nav navbar-right top-nav">
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i>
+                {{ getAuthUser().username}}<b
+                        class="caret"></b></a>
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="userLink" href="javascript:void(0)" (click)="goProfile()"><i class="fa fa-fw fa-user"></i>Profile</a>
+                </li>
+                <li>
+                    <a class="userLink" href="javascript:void(0)" (click)="goLobby()"><i class="fa fa-fw fa-home"></i>Game
+                        Lobby</a>
+                </li>
+                <li>
+                    <a class="userLink" href="javascript:void(0)" (click)="logOut()"><i
+                            class="fa fa-fw fa-power-off"></i> Log Out</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<div style="width: 100%; position:fixed; bottom: 0; top: 50px;">
+    <div class="col-md-10" style="height: 100%; padding: 0 5px 0 0;">
+
+        <div style="height:9.5%; padding-bottom: 5px; min-height: 75px;">
+            <div class="portlet portlet-default" style="height: 100%;">
+                <div class="portlet-heading">
+                    <div class="clearfix"></div>
+                </div>
+                <div class="portlet-body chat-widget" style="padding: 0; margin-left: 10px;">
+
+                    <form [formGroup]="complexForm" (ngSubmit)="createGame(complexForm.value)"
+                          style="margin-top: 20px; text-align: center;" class="form-horizontal">
+                        Create a game:
+                        <input [(ngModel)]="gameName" type="text" name="name" placeholder="Game name" class="creategame"
+                               [formControl]="complexForm.controls['name']" pattern=".*\S+.*"
+                               required>
+                        <button type="submit" [disabled]="!complexForm.valid" class="btn btn-success">Create game
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div style="height:0.5%;">
+        </div>
+
+        <div style="height:55%; padding-bottom: 5px;">
+            <div class="portlet-default amazingBorder" style=" height: 100%;">
+                <ul class="nav nav-tabs portlet-heading">
+                    <li class="active"><a href="#tab1primary" data-toggle="tab">Games</a></li>
+                    <li><a href="#tab2primary" data-toggle="tab">History</a></li>
+                </ul>
+                <div class="panel-body tabela-jogos" style="height: 91%; margin-left:auto; margin-right:auto;">
+                    <div class="tab-content">
+                        <div class="tab-pane fade in active" id="tab1primary">
+                            <div *ngIf="!hasGames()">
+                                <strong>No games created!</strong>
+                            </div>
+                            <table class="table table-striped" *ngIf="hasGames()">
+                                <thead>
+                                <tr>
+                                    <th>Game name</th>
+                                    <th class="align">Created by</th>
+                                    <th class="align">Player slots</th>
+                                    <th class="align">Status</th>
+                                    <th class="align">Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let game of games">
+                                    <template [ngIf]="game.status < 2">
+                                        <td>{{game.name}}</td>
+                                        <td class="align">{{ getUsernameById(game.creator)}}</td>
+                                        <td class="align">
+                                            {{ game.players.length}}/4
+                                        </td>
+                                        <td *ngIf="game.status" class="align">Started</td>
+                                        <td *ngIf="!game.status" class="align">Pending</td>
+                                        <td class="align">
+                                            <button *ngIf="getAuthUser()._id !== game.creator && !userInGame(game) && game.status == 0"
+                                                    [disabled]="game.players.length === 4"
+                                                    (click)="joinGame(game)" class="btn btn-info">Join
+                                            </button>
+                                            <button *ngIf="getAuthUser()._id !== game.creator && userInGame(game)"
+                                                    class="btn btn-warning" (click)="leaveGame(game)">Leave
+                                            </button>
+                                            <button *ngIf="getAuthUser()._id === game.creator" (click)="endGame(game)"
+                                                    class="btn btn-danger">End
+                                                Game
+                                            </button>
+                                            <button *ngIf="getAuthUser()._id === game.creator && game.status < 1 "
+                                                    (click)="startGame(game)"
+                                                    [disabled]="game.players.length < 2"
+                                                    class="btn btn-success">Start Game
+                                            </button>
+                                        </td>
+                                    </template>
+                                </tr>
+                                </tbody>
+                                <!--<input [(ngModel)]="gameName" type="text" name="name" placeholder="Game name" class="creategame"
+                                       [formControl]="complexForm.controls['name']" pattern=".*\S+.*"
+                                       required>-->
+                            </table>
+                        </div>
+                        <div class="tab-pane fade" id="tab2primary">
+                            Filter games: <input #search type="text" id="searchValue" placeholder="Search..."
+                                                 class="creategame paddingFilterBottom">
+                            <span class="paddingFilter">by:</span>
+                            <select #searchBy class="creategame paddingFilterBottom">
+                                <option value="gameName">Game name</option>
+                                <option value="createdBy">Created by</option>
+                                <option value="status">Status</option>
+                                <option value="startDate">Start date</option>
+                                <option value="endDate">End date</option>
+                                <option value="winner">Winner</option>
+                                <option value="players">Players</option>
+                            </select>
+                            <label class="checkbox-inline paddingFilter">
+                                <input #myGames type="checkbox" name="myGames" value="myGames">My games
+                            </label>
+                            <button class="btn btn-info paddingFilter" (click)="filterGames(search.value.trim(), searchBy.value, myGames.checked)">Apply filter</button>
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Game name</th>
+                                    <th class="align">Created by</th>
+                                    <th class="align">Status</th>
+                                    <th class="align">Start date</th>
+                                    <th class="align">End date</th>
+                                    <th class="align">Winner</th>
+                                    <th class="align">Players</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr *ngFor="let game of historyGames">
+                                    <template
+                                            [ngIf]="game.status == 2">
+                                        <td>{{game.name}}</td>
+                                        <td class="align">{{ getHistoryUsernameById(game.creator)}}</td>
+                                        <td *ngIf="game.status == 2" class="align">Finished</td>
+                                        <td *ngIf="game.status == 3" class="align">Withdraw</td>
+                                        <td class="align">{{formatDate(game.startDate)}}</td>
+                                        <td class="align">{{formatDate(game.endDate)}}</td>
+                                        <td class="align">{{ getHistoryUsernameById(game.winner)}}</td>
+                                        <td class="align"><p *ngFor="let player of game.players">
+                                            {{getHistoryUsernameById(player.player)}}</p></td>
+                                    </template>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="portlet-default" style="height:5%; margin:0 !important;">
+            <div class="portlet-heading">
+                <div class="portlet-widgets pull-left">
+                    <span>Public chat</span>
+                    <i class="fa"></i>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+
+        <div style="height:25%; padding-top: 5px; bottom: 100px !important;" class="painel-child"> <!--game-chat-->
+            <div class="" style="margin-left: 12px;">
+                <div class=""> <!--media-body-->
+                    <div *ngFor="let data of chatChannel">
+                        <h5 *ngIf="data.user !== 'System notify'" style="font-weight: bold;">{{data.user}}:
+                            <span class="medium" style="font-weight: normal;">{{data.message}}</span>
+                        </h5>
+                        <h5 *ngIf="data.user === 'System notify'" style="font-weight: bold; color: red">
+                            {{data.user}}:
+                            <span class="medium" style="font-weight: normal;">{{data.message}}</span>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <div id="sendChat" style="position: absolute; left: 10px; bottom: 10px;">
+                <div class="container">
+                    <div class="row">
+                        <form [formGroup]="complexForm1" (ngSubmit)="sendMessage(complexForm1.value)">
+                            <div class="col-xs-10 nopadding">
+                                <input name="message" autocomplete="off" id="txtMessage" class="form-control"
+                                       placeholder="Enter message..." [(ngModel)]="message" pattern=".*\S+.*"
+                                       [formControl]="complexForm1.controls['message']"
+                                       required>
+                            </div>
+                            <div class="col-xs-2 nopadding">
+                                <button type="submit" class="btn btn-default"
+                                        [disabled]="!complexForm1.valid">Send
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div> <!--fim do game-chat-->
+    </div>
+
+    <div class="col-md-2" style="height: 100%; padding: 0 0 0 5px;">
+        <div class="portlet portlet-default" style="position: relative; height: 50%; margin: 0;">
+            <div class="portlet-heading">
+                <div class="portlet-title-align">
+                    <div class="portlet-widgets pull-left portlet-child-align">
+                        <span>Top 10 Most Victories</span>
+                        <i class="fa"></i>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th class="align">Player</th>
+                        <th class="align">Victories</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="align" *ngFor="let user of getTop10V()">
+                        <td>{{user.username}}</td>
+                        <td>{{user.totalVictories}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div style="height: 50%; padding-top: 10px;">
+            <div class="portlet portlet-default" style="position: relative; height: 100%;">
+                <div class="portlet-heading">
+                    <div class="portlet-title-align">
+                        <div class="portlet-widgets pull-left portlet-child-align">
+                            <span>Top 10 Most Points</span>
+                            <i class="fa"></i>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th class="align">Player</th>
+                            <th class="align">Points</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="align" *ngFor="let user of getTop10P()">
+                            <td>{{user.username}}</td>
+                            <td>{{user.totalPoints}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

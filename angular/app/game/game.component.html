@@ -1,0 +1,99 @@
+<div class="container" *ngIf="game">
+    <strong><h1 id="title" [innerText]="title">Game preparation - {{game.name}}</h1></strong>
+    <hr>
+    <div id="fullsettings" class="col-md-12" style="min-height:510px !important;">
+        <h2><strong>My board:</strong></h2>
+        <div [style.display]="shipSettingsDisplay" class="col-md-4">
+            <div class="form-group">
+                <label for="shiptype">Ship type:</label>
+                <select id=shiptype class="form-control">
+                    <option value=0 selected>Carrier</option>
+                    <option value=1>Battleship</option>
+                    <option value=2>Cruiser</option>
+                    <option value=3>Destroyer</option>
+                    <option value=4>Submarine</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="orientation">Orientation</label>
+                <select id=orientation class="form-control">
+                    <option value=0 selected>Normal</option>
+                    <option value=1>Rotate 90º</option>
+                    <option value=2>Rotate 180º</option>
+                    <option value=3>Rotate 270º</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="line">Line (A..J): </label>
+                <input class="form-control" type=text id="line">
+            </div>
+            <div class="form-group">
+                <label for="column">Column (1..10): </label>
+                <input class="form-control" type=text id="column">
+            </div>
+            <div id="buttons" class="form-group">
+                <button class="btn btn-success" id=add (click)="addShip()">Add Ship</button>
+                <button class="btn btn-danger" id=clear (click)="clearBoard()">Clear Board</button>
+                <button class="btn btn-warning" [disabled]="!verifyIfAllShips()" (click)="ready()">Ready</button>
+                <button class="btn btn-warning" (click)="preSetShips()">Pre-set</button>
+
+            </div>
+            <hr>
+            <h4><span id=msgerro style="color:red"></span></h4>
+        </div>
+        <div class="col-md-5 center-board">
+            <div class="board">
+                <strong style="font-size: medium">Score: <span [innerHTML]="myScore">0</span></strong>
+                <table id=tabela border=1 class="game-cell">
+                </table>
+            </div>
+        </div>
+        <div id="shipList" class="col-md-3">
+            <strong><h2 id="shipListTitle" [innerText]="shipListTitle">Ship list: </h2></strong>
+            <ul [style.display]="shipListDisplay" id=listanavios>
+            </ul>
+            <ul id=notifications
+                *ngFor="let notification of notificationsList; let i = index">
+                {{notificationsList[i]}}
+            </ul>
+        </div>
+    </div>
+
+    <hr>
+    <button class="btn btn-warning" (click)="virarNavios()">Virar</button>
+    <hr>
+    <div class="col-md-12">
+        <h2><strong>Enemy boards:</strong></h2>
+        <div id="enemyBoards" [style.visibility]="enemyBoardsVisibility" class="flex-container"
+             style="visibility: hidden;">
+            <div class="flex-item" *ngFor="let player of game.players; let i = index">
+
+                <div *ngIf="player.player != getUser()._id" style="font-size: medium">Player:{{ player.player}}
+                    <br>Score: {{ player.score}}
+                </div>
+                <div *ngIf="elementos" id="board" class="board">
+                    <div id="{{player.player}}" class="game-cell"
+                         *ngFor="let elemento of elementos[player.player]; let j = index"
+                         (click)="clickElemento(j, $event)"
+                         [style.background-color]="getColor(elemento)">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="col-md-12"
+         style="min-height:300px; padding-top: 10px;border: solid 2px #000055; border-radius: 5px;">
+        Game chat:
+        <game-chat [chatGame]="game"></game-chat>
+    </div>
+</div>
+<modal #modal [keyboard]="false" [backdrop]="'static'">
+    <modal-header [show-close]="false">
+        <h4 class="modal-title">Game finished!</h4>
+    </modal-header>
+    <modal-body style="padding: 0 !important; padding-left: 20px;"><div [innerText]="modalText"> </div></modal-body>
+    <modal-footer>
+        <button type="button" class="btn btn-primary" (click)="closeGame()">Ok</button>
+    </modal-footer>
+</modal>

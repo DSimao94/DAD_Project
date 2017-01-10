@@ -1,0 +1,43 @@
+Projeto 2 DAD 2016/2017
+
+Número de grupo: 21
+
+Estudantes:
+António Venâncio 2120182 - PL1
+Diogo Simão 2130125 - PL2
+Eduardo Godinho 2130120 - PL2
+
+URL de acesso à publicação: a entregar dentro de 2 dias
+
+Credenciais para acesso ao login:
+username: user1
+password: 123
+
+username: user2
+password: 123
+
+
+FUNCIONALIDADES IMPLEMENTADAS:
+Jogo - OK
+Top Ten (by victories & by points) - OK
+Identificação e Autorização - OK
+Histórico de Jogos – OK
+Game Lobby – OK
+Jogos Múltiplos - NÃO implementado
+Outras Funcionalidades:
+	- Chat Rooms (público e privado de cada jogo) - OK
+	- Logins com redes sociais, Facebook, GitHub, Google - OK
+	- Página de perfil com Avatar - PARCIAL (só upload feito)
+	- Refresh na app após autenticação não perde o utilizador logado - OK
+
+
+GUIA DE UTILIZAÇÃO:
+Abrir a aplicação no porto 8080:    http://localhost:8080/
+No lobby, caso não se vejam os scores Top 10, aumentar a largura da página do browser.
+Dentro do jogo, ao carregar no botão Pre-set, já são pré-dispostos todos os navios automaticamente com uma configuração fixa.
+
+
+
+
+
+

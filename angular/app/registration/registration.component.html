@@ -1,0 +1,85 @@
+<div class="background top">
+    <div class="container-fluid ">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="outer">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" style="font-family: Calibri; font-size: 150%;">Register New User
+                        </div>
+                        <div class="panel-body">
+                            <div class="jumbotron">
+                                <form [formGroup]="complexForm" (ngSubmit)="submitForm(complexForm.value)">
+                                    <div class="form-group"
+                                         [ngClass]="{'has-error':!complexForm.controls['username'].valid && complexForm.controls['username'].touched}">
+                                        <label for="username">Username:</label>
+                                        <input id="username" class="form-control" type="text"
+                                               [formControl]="complexForm.controls['username']">
+                                        <div *ngIf="complexForm.controls['username'].hasError('required') && complexForm.controls['username'].touched"
+                                             class="alert alert-danger">You must include a username.
+                                        </div>
+                                        <div *ngIf="complexForm.controls['username'].hasError('minlength') && complexForm.controls['username'].touched"
+                                             class="alert alert-danger">Your username must be at least 3 characters
+                                            long.
+                                        </div>
+                                        <div *ngIf="complexForm.controls['username'].hasError('maxlength') && complexForm.controls['username'].touched"
+                                             class="alert alert-danger">Your username cannot exceed 50 characters.
+                                        </div>
+                                        <div *ngIf="complexForm.controls['username'].hasError('server')"
+                                             class="alert alert-danger">{{
+                                            complexForm.controls['username'].getError('server')}}.
+                                        </div>
+                                    </div>
+                                    <div class="form-group"
+                                         [ngClass]="{'has-error':!complexForm.controls['email'].valid && complexForm.controls['email'].touched}">
+                                        <label for="email">E-mail:</label>
+                                        <input id="email" class="form-control" type="text"
+                                               [formControl]="complexForm.controls['email']">
+                                        <div *ngIf="complexForm.controls['email'].hasError('required') && complexForm.controls['email'].touched"
+                                             class="alert alert-danger">You must include a valid e-mail.
+                                        </div>
+                                        <div *ngIf="complexForm.controls['email'].hasError('pattern') && complexForm.controls['email'].touched"
+                                             class="alert alert-danger">You must include a valid e-mail.
+                                        </div>
+                                    </div>
+                                    <div class="form-group"
+                                         [ngClass]="{'has-error':!complexForm.controls['password'].valid && complexForm.controls['password'].touched}">
+                                        <label for="password">Password:</label>
+                                        <input id="password" class="form-control" type="password"
+                                               [formControl]="complexForm.controls['password']">
+                                        <div *ngIf="complexForm.controls['password'].hasError('required') && complexForm.controls['password'].touched"
+                                             class="alert alert-danger">You must include a password.
+                                        </div>
+                                        <div *ngIf="complexForm.controls['password'].hasError('minlength') && complexForm.controls['password'].touched"
+                                             class="alert alert-danger">Your password must be at least 3 characters
+                                            long.
+                                        </div>
+                                        <div *ngIf="complexForm.controls['password'].hasError('maxlength') && complexForm.controls['password'].touched"
+                                             class="alert alert-danger">Your password cannot exceed 50 characters.
+                                        </div>
+                                    </div>
+                                    <div class="form-group"
+                                         [ngClass]="{'has-error': (complexForm.controls['passwordConfirmation'].touched && complexForm.controls['passwordConfirmation'].value == undefined) || (!complexForm.controls['passwordConfirmation'].valid && complexForm.controls['passwordConfirmation'].touched) || (complexForm.controls['password'].value != complexForm.controls['passwordConfirmation'].value && complexForm.controls['passwordConfirmation'].touched) }">
+                                        <label for="passwordConfirmation">Password Confirmation</label>
+                                        <input id="passwordConfirmation" class="form-control" type="password"
+                                               [formControl]="complexForm.controls['passwordConfirmation']">
+                                        <div *ngIf="(complexForm.controls['password'].value != complexForm.controls['passwordConfirmation'].value && complexForm.controls['passwordConfirmation'].touched) || (complexForm.controls['passwordConfirmation'].hasError('required') && complexForm.controls['passwordConfirmation'].touched)"
+                                             class="alert alert-danger">Password confirmation must be equal to the
+                                            password.
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-success"
+                                                [disabled]="!complexForm.valid || complexForm.controls['password'].value != complexForm.controls['passwordConfirmation'].value || complexForm.controls['password'].value == '' || complexForm.controls['passwordConfirmation'].value == ''">
+                                            Register
+                                        </button>
+                                        <button type="reset" routerLink="/" routerLinkActive="active" class="btn btn-danger">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

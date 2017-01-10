@@ -1,0 +1,32 @@
+<div class="" style="margin-left: 12px;">
+    <div class="">
+        <div *ngFor="let data of chatChannel">
+            <h5 *ngIf="data.user !== 'System notify'" style="font-weight: bold;">{{data.user}}:
+                <span class="medium" style="font-weight: normal;">{{data.message}}</span>
+            </h5>
+            <h5 *ngIf="data.user === 'System notify'" style="font-weight: bold; color: red">
+                {{data.user}}:
+                <span class="medium" style="font-weight: normal;">{{data.message}}</span>
+            </h5>
+        </div>
+    </div>
+</div>
+<div id="sendChat" style="position: absolute; left: 10px; bottom: 20px;">
+    <div class="container">
+        <div class="row">
+            <form [formGroup]="complexForm" (ngSubmit)="sendMessage(complexForm.value)">
+                <div class="col-xs-10 nopadding">
+                    <input name="message" autocomplete="off" id="txtMessage" class="form-control"
+                           placeholder="Enter message..." [(ngModel)]="message" pattern=".*\S+.*"
+                           [formControl]="complexForm.controls['message']"
+                           required>
+                </div>
+                <div class="col-xs-2 nopadding">
+                    <button type="submit" class="btn btn-default"
+                            [disabled]="!complexForm.valid">Send
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
